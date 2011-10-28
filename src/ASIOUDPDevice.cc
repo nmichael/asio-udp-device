@@ -111,7 +111,14 @@ bool ASIOUDPDevice::Write(const vector<unsigned char>& msg)
   if (!open)
     return false;
 
-  remote_socket->send(ba::buffer(&(msg[0]), msg.size()));
+  try
+    {
+      remote_socket->send(ba::buffer(&(msg[0]), msg.size()));
+    }
+  catch (const boost::system::system_error& err)
+    {
+      throw;
+    }
 
   return true;
 }
@@ -121,7 +128,14 @@ bool ASIOUDPDevice::Write(const string& msg)
   if (!open)
     return false;
 
-  remote_socket->send(ba::buffer(msg.c_str(), msg.size()));
+  try
+    {
+      remote_socket->send(ba::buffer(msg.c_str(), msg.size()));
+    }
+  catch (const boost::system::system_error& err)
+    {
+      throw;
+    }
 
   return true;
 }
