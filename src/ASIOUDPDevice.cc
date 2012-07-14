@@ -19,6 +19,7 @@
 */
 
 #include <iostream>
+#include <boost/version.hpp>
 #include <asio_udp_device/ASIOUDPDevice.h>
 
 using namespace std;
@@ -71,7 +72,12 @@ void ASIOUDPDevice::Open(unsigned int local_port)
   if (!open)
     {
       local_socket = new udp::socket(io_service, local_endpoint);
-      //local_socket->non_blocking(true);
+#if BOOST_VERSION >= 104700
+      local_socket->non_blocking(true);
+#else
+      boost::asio::socket_base::non_blocking_io non_blocking_command(true);
+      local_socket->io_control(non_blocking_command);
+#endif
 
       if (!local_socket->is_open())
         throw runtime_error("Failed to open local socket");
@@ -91,7 +97,12 @@ void ASIOUDPDevice::Open(unsigned int local_port,
   if (!open)
     {
       local_socket = new udp::socket(io_service, local_endpoint);
-      //local_socket->non_blocking(true);
+#if BOOST_VERSION >= 104700
+      local_socket->non_blocking(true);
+#else
+      boost::asio::socket_base::non_blocking_io non_blocking_command(true);
+      local_socket->io_control(non_blocking_command);
+#endif
 
       remote_socket = new udp::socket(io_service);
 
