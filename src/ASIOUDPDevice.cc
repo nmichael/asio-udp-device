@@ -32,6 +32,15 @@ ASIOUDPDevice::ASIOUDPDevice()
   remote_socket = 0;
 }
 
+ASIOUDPDevice::ASIOUDPDevice(unsigned int local_port)
+{
+  open = false;
+  local_socket = 0;
+  remote_socket = 0;
+
+  Open(local_port);
+}
+
 ASIOUDPDevice::ASIOUDPDevice(unsigned int local_port,
                              const string &ip_address,
                              unsigned int remote_port)
@@ -55,6 +64,22 @@ ASIOUDPDevice::~ASIOUDPDevice()
     delete remote_socket;
 }
 
+void ASIOUDPDevice::Open(unsigned int local_port)
+{
+  udp::endpoint local_endpoint(udp::v4(), local_port);
+
+  if (!open)
+    {
+      local_socket = new udp::socket(io_service, local_endpoint);
+      //local_socket->non_blocking(true);
+
+      if (!local_socket->is_open())
+        throw runtime_error("Failed to open local socket");
+
+      open = true;
+    }
+}
+
 void ASIOUDPDevice::Open(unsigned int local_port,
                          const string &remote_ip_address,
                          unsigned int remote_port)
@@ -66,7 +91,7 @@ void ASIOUDPDevice::Open(unsigned int local_port,
   if (!open)
     {
       local_socket = new udp::socket(io_service, local_endpoint);
-      local_socket->non_blocking(true);
+      //local_socket->non_blocking(true);
 
       remote_socket = new udp::socket(io_service);
 
@@ -94,8 +119,10 @@ void ASIOUDPDevice::Close()
 {
   if (open)
     {
-      local_socket->close();
-      remote_socket->close();
+      if (local_socket != 0)
+        local_socket->close();
+      if (remote_socket != 0)
+        remote_socket->close();
       open = false;
     }
 }

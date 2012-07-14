@@ -32,11 +32,13 @@ class ASIOUDPDevice
 {
  public:
   ASIOUDPDevice();
+  ASIOUDPDevice(unsigned int local_port);
   ASIOUDPDevice(unsigned int local_port,
                 const std::string &ip_address,
                 unsigned int remote_port);
   ~ASIOUDPDevice();
 
+  void Open(unsigned int local_port);
   void Open(unsigned int local_port,
             const std::string &ip_address,
             unsigned int remote_port);
